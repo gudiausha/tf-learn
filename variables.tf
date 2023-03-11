@@ -30,3 +30,15 @@ variable "environment" {
   default     = "development"
   description = "The environment tag to assign to the project."
 }
+
+variable "http_server_port" {
+ description = "The port the server will use for HTTP requests"
+ type = string
+ default = 80
+}
+
+variable "https_server_port" {
+ description = "The port the server will use for HTTP requests"
+ type = string
+ default = 443
+}

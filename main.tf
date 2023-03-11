@@ -61,7 +61,7 @@ resource "google_compute_firewall" "allow-http" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80"]
+    ports    = [var.http_server_port]
   }
 
   source_ranges = ["0.0.0.0/0"]
@@ -77,7 +77,7 @@ resource "google_compute_firewall" "allow-https" {
 
   allow {
     protocol = "tcp"
-    ports    = ["443"]
+    ports    = [var.https_server_port]
   }
 
   source_ranges = ["0.0.0.0/0"]
@@ -93,7 +93,7 @@ resource "google_compute_firewall" "allow-egress" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "443"]
+    ports    = [var.http_server_port, var.https_server_port]
   }
 
   direction = "EGRESS"
