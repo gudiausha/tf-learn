@@ -24,6 +24,16 @@ resource "google_compute_instance" "default_instance" {
   machine_type = "f1-micro"
   zone = var.zone
 
+  tags = ["terraform-example","http-server","https-server"]
+
+  # metadata_startup_script = <<EOF
+  #   #!/bin/bash
+  #   echo "Hello, World" > /var/www/html/index.html
+  #   nohup busybox httpd -f -p 8080 &
+  # EOF
+
+  metadata_startup_script = "${file("startup_script.sh")}"
+
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-10"
@@ -33,5 +43,59 @@ resource "google_compute_instance" "default_instance" {
 
   network_interface {
     network = "default"
+
+        access_config {
+      // Allocate a ephemeral external IP
+    }
   }
+
+  
 } 
+
+resource "google_compute_firewall" "allow-http" {
+  depends_on = [
+    google_compute_instance.default_instance
+  ]
+  name    = "allow-http"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags = ["http-server"]
+}
+
+resource "google_compute_firewall" "allow-https" {
+  depends_on = [
+    google_compute_instance.default_instance
+  ]
+  name    = "allow-https"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["443"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags = ["https-server"]
+}
+
+resource "google_compute_firewall" "allow-egress" {
+  depends_on = [
+    google_compute_instance.default_instance
+  ]
+  name    = "allow-egress"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443"]
+  }
+
+  direction = "EGRESS"
+  target_tags = ["terraform-example"]
+}

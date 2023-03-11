@@ -8,10 +8,10 @@ variable "project_id" {
   description = "The unique identifier of the GCP project to create."
 }
 
-variable "billing_account_id" {
-  type        = string
-  description = "The ID of the billing account to associate with the project."
-}
+# variable "billing_account_id" {
+#   type        = string
+#   description = "The ID of the billing account to associate with the project."
+# }
 
 variable "region" {
   type        = string
